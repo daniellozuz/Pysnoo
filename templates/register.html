@@ -1,0 +1,13 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+	<br/>Please sign up below.
+	<form method="post" action="http://localhost:5000/register">
+		<input type="text" placeholder="name" name="reg_name" id="reg_name">
+		<input type="text" placeholder="surname" name="reg_surname" id="reg_surname">
+		<input type="text" placeholder="password" name="reg_password" id="reg_password">
+		<input type="text" placeholder="date of birth [yyyy-mm-dd]" name="reg_dob" id="reg_dob">
+		<input type="submit" value="Sign in" name="go_register" id="go_register">
+	</form>
+
+{% endblock %}
