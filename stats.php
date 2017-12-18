@@ -131,7 +131,7 @@ EOT;
 						else
 						{
 							$shown_match_id = $_SESSION['shown_match_id'];
-							$result = $conn->query("SELECT IFNULL(B.username,'') player1, IFNULL(C.username,'') player2, IFNULL(D.clubname,'') clubname, A.logs, A.bestof, A.date, A.p1_score, A.p2_score FROM matches A LEFT JOIN users B ON A.player1  = B.id LEFT JOIN users C ON A.player2 = C.id LEFT JOIN clubs D ON A.club = D.id WHERE A.id='$shown_match_id'");
+							$result = $conn->query("SELECT IFNULL(B.username,'') player1, IFNULL(C.username,'') player2, IFNULL(D.clubname,'') clubname, A.logs, A.bestof, A.date, A.p1_score, A.p2_score FROM matches A LEFT JOIN users B ON A.player1 = B.id LEFT JOIN users C ON A.player2 = C.id LEFT JOIN clubs D ON A.club = D.id WHERE A.id='$shown_match_id'");
 							if (!$result) throw new Exception($conn->error);
 							
 							// Jesli jest co
