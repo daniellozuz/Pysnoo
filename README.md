@@ -1,2 +1,8 @@
-# Pysnoo
-Python version of snoo
+## Pysnoo
+
+# Python version of snoo. 
+
+# Engineering thesis at Mechatronic Engineering AGH.
+
+
+
