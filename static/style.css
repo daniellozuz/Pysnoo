@@ -1,0 +1,288 @@
+body
+{
+	background-color: #202020;
+	font-family: 'Lato', sans-serif;
+	color: white;
+}
+
+a
+{
+	color: white;
+}
+
+#login_bar
+{
+	background-color: #202020;
+	height: 70px;
+	width: 300px;
+	position: fixed;
+	left: 1850px;
+}
+
+#login_bar:hover
+{
+	left: 1620px;
+}
+
+#photo
+{
+	height: 70px;
+	width: 70px;
+	background-color: #303030;
+	border-radius: 35px;
+	float: left;
+}
+
+#peekaboo
+{
+	float: left;
+	width: 220px;
+	margin: 10px 10px 10px 0px;
+}
+
+#peekaboo > form > #div1
+{
+	float: left;
+	width: 130px;
+	padding-left: 20px;
+}
+
+#peekaboo > form > #div2
+{
+	float: left;
+}
+
+#peekaboo > form > #div1 > input
+{
+	padding: 1px;
+	margin: 2px;
+	width: 100px;
+}
+
+#peekaboo > form > #div2 > input[type=submit]
+{
+	width: 56px;
+	height: 46px;
+}
+
+#peekaboo > form > #div3 > input[type=submit]
+{
+	width: 200px;
+	height: 46px;
+}
+
+#container
+{
+	width: 1900px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#header
+{
+	font-size: 48px;
+	text-align: center;
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+
+#menu
+{
+	background-color: #303030;
+	padding: 10px;
+}
+
+#content
+{
+	margin-top: 10px;
+	margin-bottom: 10px;
+	min-height: 500px;
+	background-color: #303030;
+	padding: 10px;
+}
+
+#footer
+{
+	background-color: #303030;
+	padding: 10px;
+	text-align: center;
+}
+
+#wyswietlacz
+{
+	text-align: center;
+	margin-top: 20px;
+	margin-bottom: 20px;
+	background-color: #404040;
+	font-size: 20px;
+}
+
+#topka
+{
+	width: 1000px;
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+	height: 200px;
+	background-color: #505050;
+}
+
+#gracz1
+{
+	float: left;
+	height: 200px;
+	background-color: #606060;
+	width: 400px;
+	font-size: 30px;
+	line-height: 200%;
+}
+
+#gracz1_active
+{
+	float: left;
+	height: 200px;
+	background-color: #808080;
+	width: 400px;
+	font-size: 30px;
+	line-height: 200%;
+}
+
+#srodek
+{
+	width: 200px;
+	background-color: #404040;
+	float: left;
+	height: 180px;
+	margin-top: 10px;
+	font-size: 22px;
+	line-height: 150%;
+}
+
+#brejkus
+{
+	width: 200px;
+	background-color: #404040;
+	float: left;
+	height: 70px;
+	margin-top: 10px;
+	font-size: 22px;
+	line-height: 150%;
+}
+
+#tajmer
+{
+	width: 200px;
+	background-color: #404040;
+	float: left;
+	height: 70px;
+	margin-top: 10px;
+	font-size: 22px;
+	line-height: 150%;
+}
+
+#gracz2
+{
+	float: right;
+	height: 200px;
+	background-color: #606060;
+	width: 400px;
+	font-size: 30px;
+	line-height: 200%;
+}
+
+#gracz2_active
+{
+	float: right;
+	height: 200px;
+	background-color: #808080;
+	width: 400px;
+	font-size: 30px;
+	line-height: 200%;
+}
+
+#bestof
+{
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#buttonsy
+{
+	background-color: #606060;
+	height: 100px;
+}
+
+#start, #pause, #change, #p1, #p2, #p3, #p4, #p5, #p6, #p7, #foul4, #foul5, #foul6, #foul7, #miss, #win, #back, #resume, #GoToMatch_Back
+{
+	background-color: #202020;
+	border: none;
+	float: left;
+	padding: 10px;
+	font-size: 20px;
+	color: white;
+	margin: 10px;
+}
+
+#matc_table
+{
+	width: 1210px;
+	background-color: #606060;
+	float: left;
+}
+
+.matc_table_row
+{
+	width: 1200px;
+	background-color: #505050;
+	padding: 5px;
+	height: 50px;
+}
+
+.matc_table_row:hover
+{
+	width: 1200px;
+	background-color: #505050;
+	padding: 5px;
+	height: 50px;
+	cursor: pointer;
+}
+
+.entry
+{
+	float: left;
+	background-color: #303030;
+	height: 30px;
+	text-align: center;
+	padding: 5px;
+	margin: 5px;
+}
+
+#gownienko
+{
+	float: left;
+	width: 400px;
+	height: 400px;
+	background-color: #707070;
+	padding: 10px;
+}
+
+.show_match
+{
+	background-color: red;
+	float: left;
+}
+
+.menu_opt
+{
+	float: left;
+	height: 25px;
+	font-size: 18px;
+	padding: 10px 20px 10px 20px;
+	border-right: 1px solid #404040;
+}
+
+.menu_opt:hover
+{
+	cursor: pointer;
+	background-color: #202020;
+}
