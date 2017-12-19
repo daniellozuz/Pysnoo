@@ -75,8 +75,20 @@ def show_generic_stats():
 
 @app.route('/detailed_stats.html', methods=['POST'])
 def show_detailed_stats():
+    match_id = request.form['show_match']
+    for row in con.execute('SELECT * FROM matches WHERE id=?', [match_id]):
+        match_logs = parse_logs(row[5])
+        # Check which player are you.
+    print(match_logs)
+    scoring = get_scoring(match_logs)
+    print(scoring)
+    print(scoring['time'])
+    print(len(scoring['time']))
+    print(len(scoring['you']))
+    print(len(scoring['opponent']))
+    
     username = session['username'] if 'username' in session else None
-    return render_template('detailed_stats.html', username=username)
+    return render_template('detailed_stats.html', username=username, scoring=scoring)
 
 
 @app.route('/login', methods=['POST'])
@@ -114,6 +126,49 @@ def register():
     else:
         flash('A new user successfully created.')
     return redirect(url_for('show_index'))
+
+
+def parse_logs(logs):
+    logs = logs.split('Log: ')[1:]
+    match_logs = {}
+    for log in logs:
+        datetime, command = log.split(' : ')
+        match_logs[datetime] = command
+    return match_logs
+
+
+def get_scoring(match_logs):
+    for datetime, command in match_logs.items():
+        if command == 'begin':
+            continue
+        elif command == 'start':
+            at_table = 'you'
+            sitting = 'opponent'
+            scoring = {'time': [datetime], 'you': [0], 'opponent': [0]}
+        elif command in ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7']:
+            scoring['time'].append(datetime)
+            scoring[at_table].append(scoring[at_table][-1] + int(command[-1]))
+            scoring[sitting].append(scoring[sitting][-1])
+        elif command == 'change':
+            scoring['time'].append(datetime)
+            scoring[at_table].append(scoring[at_table][-1])
+            scoring[sitting].append(scoring[sitting][-1])
+            if at_table == 'you':
+                at_table = 'opponent'
+                sitting = 'you'
+            else:
+                at_table = 'you'
+                sitting = 'opponent'
+        elif command == 'win':
+            scoring['time'].append(datetime)
+            scoring[at_table].append(0)
+            scoring[sitting].append(0)
+        elif command in ['foul4', 'foul5', 'foul6', 'foul7']:
+            scoring['time'].append(datetime)
+            scoring[at_table].append(scoring[at_table][-1])
+            scoring[sitting].append(scoring[sitting][-1] + int(command[-1]))
+        print('At table:', scoring[at_table][-1], 'Sitting:', scoring[sitting][-1])
+    return scoring
 
 
 app.run(debug=True)
