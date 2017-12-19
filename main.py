@@ -30,8 +30,8 @@ def show_register():
     return render_template('register.html', username=username)
 
 
-@app.route('/stats.html')
-def show_stats():
+@app.route('/generic_stats.html')
+def show_generic_stats():
     matches = []
     for row in con.execute("SELECT IFNULL(B.username,'') player1,\
                            IFNULL(C.username,'') player2,\
@@ -52,7 +52,6 @@ def show_stats():
         match['p1_score'] = row[6]
         match['p2_score'] = row[7]
         matches.append(match)
-        print(match)
     won = {'matches': 0, 'frames': 0}
     lost = {'matches': 0, 'frames': 0}
     for match in matches:
@@ -71,7 +70,13 @@ def show_stats():
             else:
                 lost['matches'] += 1
     username = session['username'] if 'username' in session else None
-    return render_template('stats.html', username=username, matches=matches, won=won, lost=lost)
+    return render_template('generic_stats.html', username=username, matches=matches, won=won, lost=lost)
+
+
+@app.route('/detailed_stats.html', methods=['POST'])
+def show_detailed_stats():
+    username = session['username'] if 'username' in session else None
+    return render_template('detailed_stats.html', username=username)
 
 
 @app.route('/login', methods=['POST'])
@@ -79,7 +84,6 @@ def log_in():
     # XXX Validate form.
     username = request.form['username']
     password = request.form['password']
-    print(con.execute('SELECT * FROM users WHERE username=?', [username]).fetchall())
     for row in con.execute('SELECT * FROM users WHERE username=?', [username]):
         if row[2] == password:
             session['username'] = username
@@ -95,6 +99,7 @@ def log_out():
 
 @app.route('/register', methods=['POST'])
 def register():
+    # XXX Validate form.
     reg_name = request.form['reg_name']
     reg_surname = request.form['reg_surname']
     reg_password = request.form['reg_password']
@@ -103,7 +108,7 @@ def register():
     try:
         with con:
             con.execute('INSERT INTO users(username, password, date_of_birth) VALUES (?, ?, ?)',
-                         [reg_username, reg_password, reg_dob])
+                        [reg_username, reg_password, reg_dob])
     except sqlite3.IntegrityError:
         flash('Such user already exists.')
     else:

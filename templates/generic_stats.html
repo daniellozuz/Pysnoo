@@ -1,0 +1,116 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+	<div id="plots">
+		<div id="gownienko">
+			<canvas id="match_chart" width="400" height="400"></canvas>
+		</div>
+		<div id="gownienko">
+			<canvas id="frame_chart" width="400" height="400"></canvas>
+		</div>
+	</div>
+	<div id="matc_table">
+		<div class="matc_table_row">
+			<div class="entry" style="width:40px;">ID</div>
+			<div class="entry" style="width:180px;">Player 1</div>
+			<div class="entry" style="width:60px;">Score</div>
+			<div class="entry" style="width:180px;">Player 2</div>
+			<div class="entry" style="width:150px;">Club</div>
+			<div class="entry" style="width:60px;">Best of</div>
+			<div class="entry" style="width:200px;">Date</div>
+		</div>
+	{% for match in matches %}
+		<div class="matc_table_row">
+			<div class="entry" style="width:40px;">{{ match['id'] }}</div>
+			<div class="entry" style="width:180px;">{{ match['player1'] }}</div>
+			<div class="entry" style="width:60px;">{{ match['p1_score'] }} : {{ match['p2_score'] }}</div>
+			<div class="entry" style="width:180px;">{{ match['player2'] }}</div>
+			<div class="entry" style="width:150px;">{{ match['clubname'] }}</div>
+			<div class="entry" style="width:60px;">{{ match['bestof'] }}</div>
+			<div class="entry" style="width:200px;">{{ match['date'] }}</div>
+			<div class="show_match">
+				<form method="post" action="http://localhost:5000/detailed_stats.html">
+					<input type="hidden" name="show_match" value="{{ match['id'] }}"></input>
+					<input type="submit" id="show_match_button" value="Show Details"></input>
+				</form>
+			</div>
+		</div>
+		<div style="clear: both;"></div>
+	{% endfor %}
+	</div>
+	<script>
+		var ctx = document.getElementById("match_chart");
+		var myChart = new Chart(ctx, {
+			type: 'doughnut',
+			data: {
+				labels: ["Won", "Lost"],
+				datasets: [{
+					data: [{{ won['matches'] }}, {{ lost['matches'] }}],
+					backgroundColor: [
+						'rgba(50, 185, 50, 0.5)',
+						'rgba(175, 50, 50, 0.5)'
+					],
+					borderColor: [
+						'rgba(25, 92, 25, 1)',
+						'rgba(87, 25, 25, 1)'
+					],
+					borderWidth: 2
+				}]
+			},
+			options: {
+				legend: {
+					labels: {
+						fontColor: 'white',
+						fontSize: 14
+					}
+				},
+				title: {
+					display: true,
+					fontColor: 'white',
+					fontStyle: 'normal',
+					fontFamily: 'Lato',
+					fontSize: 18,
+					text: 'Matches'
+				}
+			}
+		});
+	</script>
+	<script>
+		var ctx = document.getElementById("frame_chart");
+		var myChart = new Chart(ctx, {
+			type: 'doughnut',
+			data: {
+				labels: ["Won", "Lost"],
+				datasets: [{
+					data: [{{ won['frames'] }}, {{ lost['frames'] }}],
+					backgroundColor: [
+						'rgba(50, 185, 50, 0.5)',
+						'rgba(175, 50, 50, 0.5)'
+					],
+					borderColor: [
+						'rgba(25, 92, 25, 1)',
+						'rgba(87, 25, 25, 1)'
+					],
+					borderWidth: 2
+				}]
+			},
+			options: {
+				legend: {
+					labels: {
+						fontColor: 'white',
+						fontSize: 14
+					}
+				},
+				title: {
+					display: true,
+					fontColor: 'white',
+					fontStyle: 'normal',
+					fontFamily: 'Lato',
+					fontSize: 18,
+					text: 'Frames'
+				}
+			}
+		});
+	</script>
+
+{% endblock %}

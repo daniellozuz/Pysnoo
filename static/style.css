@@ -1,17 +1,14 @@
-body
-{
+body {
 	background-color: #202020;
 	font-family: 'Lato', sans-serif;
 	color: white;
 }
 
-a
-{
+a {
 	color: white;
 }
 
-#login_bar
-{
+#login_bar {
 	background-color: #202020;
 	height: 70px;
 	width: 300px;
@@ -19,13 +16,11 @@ a
 	left: 1850px;
 }
 
-#login_bar:hover
-{
+#login_bar:hover {
 	left: 1620px;
 }
 
-#photo
-{
+#photo {
 	height: 70px;
 	width: 70px;
 	background-color: #303030;
@@ -33,67 +28,57 @@ a
 	float: left;
 }
 
-#peekaboo
-{
+#peekaboo {
 	float: left;
 	width: 220px;
 	margin: 10px 10px 10px 0px;
 }
 
-#peekaboo > form > #div1
-{
+#peekaboo > form > #div1 {
 	float: left;
 	width: 130px;
 	padding-left: 20px;
 }
 
-#peekaboo > form > #div2
-{
+#peekaboo > form > #div2 {
 	float: left;
 }
 
-#peekaboo > form > #div1 > input
-{
+#peekaboo > form > #div1 > input {
 	padding: 1px;
 	margin: 2px;
 	width: 100px;
 }
 
-#peekaboo > form > #div2 > input[type=submit]
-{
+#peekaboo > form > #div2 > input[type=submit] {
 	width: 56px;
 	height: 46px;
 }
 
-#peekaboo > form > #div3 > input[type=submit]
-{
+#peekaboo > form > #div3 > input[type=submit] {
 	width: 200px;
 	height: 46px;
 }
 
-#container
-{
+#container {
 	width: 1900px;
 	margin-left: auto;
 	margin-right: auto;
 }
 
-#header
-{
+#header {
 	font-size: 48px;
 	text-align: center;
 	margin-top: 20px;
 	margin-bottom: 20px;
 }
 
-#menu
-{
+#menu {
 	background-color: #303030;
 	padding: 10px;
 }
 
-#content
-{
+#content {
 	margin-top: 10px;
 	margin-bottom: 10px;
 	min-height: 500px;
@@ -101,15 +86,13 @@ a
 	padding: 10px;
 }
 
-#footer
-{
+#footer {
 	background-color: #303030;
 	padding: 10px;
 	text-align: center;
 }
 
-#wyswietlacz
-{
+#wyswietlacz {
 	text-align: center;
 	margin-top: 20px;
 	margin-bottom: 20px;
@@ -117,8 +100,7 @@ a
 	font-size: 20px;
 }
 
-#topka
-{
+#topka {
 	width: 1000px;
 	text-align: center;
 	margin-left: auto;
@@ -127,8 +109,7 @@ a
 	background-color: #505050;
 }
 
-#gracz1
-{
+#gracz1 {
 	float: left;
 	height: 200px;
 	background-color: #606060;
@@ -137,8 +118,7 @@ a
 	line-height: 200%;
 }
 
-#gracz1_active
-{
+#gracz1_active {
 	float: left;
 	height: 200px;
 	background-color: #808080;
@@ -147,8 +127,7 @@ a
 	line-height: 200%;
 }
 
-#srodek
-{
+#srodek {
 	width: 200px;
 	background-color: #404040;
 	float: left;
@@ -158,8 +137,7 @@ a
 	line-height: 150%;
 }
 
-#brejkus
-{
+#brejkus {
 	width: 200px;
 	background-color: #404040;
 	float: left;
@@ -169,8 +147,7 @@ a
 	line-height: 150%;
 }
 
-#tajmer
-{
+#tajmer {
 	width: 200px;
 	background-color: #404040;
 	float: left;
@@ -180,8 +157,7 @@ a
 	line-height: 150%;
 }
 
-#gracz2
-{
+#gracz2 {
 	float: right;
 	height: 200px;
 	background-color: #606060;
@@ -190,8 +166,7 @@ a
 	line-height: 200%;
 }
 
-#gracz2_active
-{
+#gracz2_active {
 	float: right;
 	height: 200px;
 	background-color: #808080;
@@ -200,20 +175,17 @@ a
 	line-height: 200%;
 }
 
-#bestof
-{
+#bestof {
 	margin-left: auto;
 	margin-right: auto;
 }
 
-#buttonsy
-{
+#buttonsy {
 	background-color: #606060;
 	height: 100px;
 }
 
-#start, #pause, #change, #p1, #p2, #p3, #p4, #p5, #p6, #p7, #foul4, #foul5, #foul6, #foul7, #miss, #win, #back, #resume, #GoToMatch_Back
-{
+#start, #pause, #change, #p1, #p2, #p3, #p4, #p5, #p6, #p7, #foul4, #foul5, #foul6, #foul7, #miss, #win, #back, #resume, #GoToMatch_Back {
 	background-color: #202020;
 	border: none;
 	float: left;
@@ -223,32 +195,19 @@ a
 	margin: 10px;
 }
 
-#matc_table
-{
-	width: 1210px;
-	background-color: #606060;
-	float: left;
+#matc_table {
+	text-align: center;
 }
 
-.matc_table_row
-{
+.matc_table_row {
+	display: inline-block;
 	width: 1200px;
-	background-color: #505050;
+	background-color: #404040;
 	padding: 5px;
 	height: 50px;
 }
 
-.matc_table_row:hover
-{
-	width: 1200px;
-	background-color: #505050;
-	padding: 5px;
-	height: 50px;
-	cursor: pointer;
-}
-
-.entry
-{
+.entry {
 	float: left;
 	background-color: #303030;
 	height: 30px;
@@ -257,23 +216,41 @@ a
 	margin: 5px;
 }
 
-#gownienko
-{
-	float: left;
-	width: 400px;
-	height: 400px;
-	background-color: #707070;
-	padding: 10px;
+#plots {
+	width: 100%;
+	height: 340px;
+	text-align: center;
 }
 
-.show_match
-{
-	background-color: red;
-	float: left;
+#gownienko {
+	display: inline-block;
+	width: 330px;
+	height: 330px;
+	background-color: #404040;
 }
 
-.menu_opt
-{
+#show_match_button {
+	border: none;
+	background-color: #303030;
+	height: 40px;
+	width: 170px;
+	text-align: center;
+	padding: 5px;
+	margin: 5px;
+	color: white;
+	font-family: 'Lato';
+	font-size: 16px;
+}
+
+#show_match_button:hover {
+	cursor: pointer;	
+}
+
+.show_match {
+	height: 50px;
+}
+
+.menu_opt {
 	float: left;
 	height: 25px;
 	font-size: 18px;
@@ -281,8 +258,7 @@ a
 	border-right: 1px solid #404040;
 }
 
-.menu_opt:hover
-{
+.menu_opt:hover {
 	cursor: pointer;
 	background-color: #202020;
 }
