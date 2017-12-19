@@ -6,7 +6,7 @@
 	</div>
 	</div>
 	<script>
-		var trace1 = {
+		var you = {
 			x: {{ scoring['time'] | safe }} ,
 			y: {{ scoring['you'] | safe }} ,
 			type: 'scatter',
@@ -16,7 +16,7 @@
 				width: 4
 			}
 		};
-		var trace2 = {
+		var opponent = {
 			x: {{ scoring['time'] | safe }} ,
 			y: {{ scoring['opponent'] | safe }} ,
 			type: 'scatter',
@@ -26,11 +26,11 @@
 				width: 4
 			}
 		};
-		var data = [trace1, trace2];
+		var data = [you, opponent];
 		var options = {
 			paper_bgcolor: 'rgba(0, 0, 0, 0)',
 			plot_bgcolor: 'rgba(0, 0, 0, 0)',
-			title: 'dupa',
+			title: 'Scoring',
 			width: 1000,
 			xaxis: {
 				showgrid: false

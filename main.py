@@ -77,10 +77,10 @@ def show_generic_stats():
 def show_detailed_stats():
     match_id = request.form['show_match']
     for row in con.execute('SELECT * FROM matches WHERE id=?', [match_id]):
+        player1 = 'you' if row[1] == session['id'] else 'opponent'
         match_logs = parse_logs(row[5])
         # Check which player are you.
-    print(match_logs)
-    scoring = get_scoring(match_logs)
+    scoring = get_scoring(match_logs, player1)
     print(scoring)
     print(scoring['time'])
     print(len(scoring['time']))
@@ -130,21 +130,29 @@ def register():
 
 def parse_logs(logs):
     logs = logs.split('Log: ')[1:]
+    print('Match logs before parsing at parse_logs:', logs)
     match_logs = {}
     for log in logs:
         datetime, command = log.split(' : ')
+        print(datetime, command)
         match_logs[datetime] = command
+    print('Match logs at parse_logs:', match_logs)
     return match_logs
 
 
-def get_scoring(match_logs):
+def get_scoring(match_logs, first_player):
+    # XXX Heavily bugged. 1. Only one frame remembered. 2. Initial player not known.
+    print('Match logs at get_scoring:', match_logs)
     for datetime, command in match_logs.items():
         if command == 'begin':
-            continue
-        elif command == 'start':
-            at_table = 'you'
-            sitting = 'opponent'
             scoring = {'time': [datetime], 'you': [0], 'opponent': [0]}
+            if first_player == 'you':
+                at_table = 'you'
+                sitting = 'opponent'
+        elif command == 'start':
+            scoring['time'].append(datetime)
+            scoring[at_table].append(0)
+            scoring[sitting].append(0)
         elif command in ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7']:
             scoring['time'].append(datetime)
             scoring[at_table].append(scoring[at_table][-1] + int(command[-1]))
