@@ -135,7 +135,7 @@ def parse_logs(logs):
     for log in logs:
         datetime, command = log.split(' : ')
         print(datetime, command)
-        match_logs[datetime] = command
+        match_logs[datetime] = command # XXX The same times are possible !!!! dict is no good!!! XXX
     print('Match logs at parse_logs:', match_logs)
     return match_logs
 
