@@ -10,6 +10,7 @@ con = sqlite3.connect('snooker.db', check_same_thread=False)
 
 
 ################################################# XXX PAGES XXX ####################################
+
 @app.route('/index.html')
 def show_index():
     username = session['username'] if 'username' in session else None
@@ -20,10 +21,12 @@ def show_index():
 def show_profile():
     username = None
     if 'username' in session:
-        for row in con.execute('SELECT * FROM users WHERE username=?', [session['username']]):
-            user_id, username, password, date_of_birth = row
-    return render_template('profile.html', user_id=user_id, username=username, password=password,
-                           date_of_birth=date_of_birth)
+        user_id, username, password, date_of_birth = con.execute('SELECT * '
+                                                                 'FROM users '
+                                                                 'WHERE username=?',
+                                                                 [session['username']]).fetchone()
+    return render_template('profile.html', user_id=user_id, username=username,
+                           password=password, date_of_birth=date_of_birth)
 
 
 @app.route('/register.html')
@@ -72,23 +75,21 @@ def show_generic_stats():
             else:
                 lost['matches'] += 1
     username = session['username'] if 'username' in session else None
-    return render_template('generic_stats.html', username=username, matches=matches, won=won, lost=lost)
+    return render_template('generic_stats.html', username=username,
+                           matches=matches, won=won, lost=lost)
 
 
 @app.route('/detailed_stats.html', methods=['POST'])
 def show_detailed_stats():
     match_id = request.form['show_match']
-    for row in con.execute('SELECT * FROM matches WHERE id=?', [match_id]):
-        player1 = 'you' if row[1] == session['id'] else 'opponent'
-        match_logs = parse_logs(row[5])
-        # Check which player are you.
+    player1_id, match_logs = con.execute('SELECT player1, logs '
+                                         'FROM matches '
+                                         'WHERE id=?',
+                                         [match_id]).fetchone()
+    player1 = 'you' if player1_id == session['id'] else 'opponent'
+    match_logs = parse_logs(match_logs)
+    # XXX Check which player are you.
     scoring = get_scoring(match_logs, player1)
-    print(scoring)
-    print(scoring['time'])
-    print(len(scoring['time']))
-    print(len(scoring['you']))
-    print(len(scoring['opponent']))
-    
     username = session['username'] if 'username' in session else None
     return render_template('detailed_stats.html', username=username, scoring=scoring)
 
@@ -97,8 +98,12 @@ def show_detailed_stats():
 def show_create_match():
     if 'match_id' in session:
         return redirect(url_for('show_scoreboard'))
-    players = [row[1] for row in con.execute('SELECT * FROM users ORDER BY username ASC')]
-    clubs = [row[1] for row in con.execute('SELECT * FROM clubs ORDER BY clubname ASC')]
+    players = [row[1] for row in con.execute('SELECT * '
+                                             'FROM users '
+                                             'ORDER BY username ASC')]
+    clubs = [row[1] for row in con.execute('SELECT * '
+                                           'FROM clubs '
+                                           'ORDER BY clubname ASC')]
     username = session['username'] if 'username' in session else None
     return render_template('create_match.html', username=username, players=players, clubs=clubs)
 
@@ -113,6 +118,7 @@ def show_scoreboard():
 
 
 ################################################# XXX FORMS XXX ####################################
+
 @app.route('/login', methods=['POST'])
 def log_in():
     # XXX Validate form.
@@ -157,7 +163,7 @@ def create_match():
     player1, player2, club = {}, {}, {}
     player1['name'] = username if username else request.form['player1']
     player2['name'] = request.form['player2']
-    club['name'] = request.form['venue']
+    club['name'] = request.form['club']
     try:
         best_of = int(request.form['bestof'])
     except ValueError:
@@ -197,40 +203,41 @@ def create_match():
                         'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
                         [player1['id'], player2['id'], club['id'], best_of, initial_log,
                          'false', 'false', 'false', 'false', time, 0, 0])
-            session['match_id'] = con.execute('SELECT id '
-                                              'FROM matches '
-                                              'WHERE player1=? '
-                                              'AND player2=? '
-                                              'AND club=? '
-                                              'AND finished="false"',
-                                              [player1['id'], player2['id'],
-                                               club['id']]).fetchone()[0]
-            flash('A new match created.')
+        session['match_id'] = con.execute('SELECT id '
+                                          'FROM matches '
+                                          'WHERE player1=? '
+                                          'AND player2=? '
+                                          'AND club=? '
+                                          'AND finished="false"',
+                                          [player1['id'], player2['id'],
+                                           club['id']]).fetchone()[0]
+        flash('A new match created.')
     return redirect(url_for('show_scoreboard'))
 
 
 @app.route('/scoreboard', methods=['POST'])
 def scoreboard():
     # TODO Not finished (change match status when it is over.)
-    match_id = session['match_id']
-    print('Match ID:', match_id)
     button = list(request.form.keys())[0]
     if button == 'GoToMatch_Back':
         del session['match_id']
         return redirect(url_for('show_create_match'))
     time = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
     new_log = 'Log: ' + time + ' : ' + button
-    for row in con.execute('SELECT logs FROM matches WHERE id=?', [match_id]):
-        prev_logs = row[0]
+    previous_logs = con.execute('SELECT logs '
+                                'FROM matches '
+                                'WHERE id=?',
+                                [session['match_id']]).fetchone()[0]
     with con:
-        con.execute('UPDATE matches SET logs=? WHERE id=?', [prev_logs + new_log, match_id])
-    print('Previous logs:', prev_logs)
-    print('Adding:', new_log)
-    print(button)
+        con.execute('UPDATE matches '
+                    'SET logs=? '
+                    'WHERE id=?',
+                    [previous_logs + new_log, session['match_id']])
     return redirect(url_for('show_scoreboard'))
 
 
 ################################################# XXX HELPERS XXX ##################################
+
 def parse_logs(logs):
     return [log.split(' : ') for log in logs.split('Log: ')[1:]]
 
