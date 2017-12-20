@@ -217,18 +217,11 @@ def scoreboard():
 
 ################################################# XXX HELPERS XXX ##################################
 def parse_logs(logs):
-    logs = logs.split('Log: ')[1:]
-    print('Match logs before parsing at parse_logs:', logs)
-    match_logs = []
-    for log in logs:
-        time, command = log.split(' : ')
-        match_logs.append((time, command))
-    print('Match logs at parse_logs:', match_logs)
-    return match_logs
+    return [log.split(' : ') for log in logs.split('Log: ')[1:]]
 
 
 def get_scoring(match_logs, first_player):
-    # XXX Possibly bugged: Which player after win?
+    # XXX Possibly bugged and not finished: Which player after win?
     if first_player == 'you':
         at_table = 'you'
         sitting = 'opponent'
