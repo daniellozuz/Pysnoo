@@ -153,7 +153,11 @@ def create_match():
     player1_name = username if username else request.form['player1']
     player2_name = request.form['player2']
     venue_name = request.form['venue']
-    best_of = request.form['bestof']
+    try:
+        best_of = int(request.form['bestof'])
+    except ValueError:
+        flash('Incorrect best of.')
+        return redirect(url_for('show_index'))
     try:
         for row in con.execute('SELECT id FROM users WHERE username=?', [player1_name]):
             player1_id = row[0]
@@ -172,8 +176,16 @@ def create_match():
             match_id = row[0]
         print(match_id)
     except UnboundLocalError:
-        flash('Match not found, implement its creation and return scoreboard with new match.')
-        return redirect(url_for('show_index'))
+        with con:
+            log = 'Log: ' + '2016-11-26 17:20:51' + ' : begin'
+            con.execute('INSERT INTO matches(player1, player2, club, bestof, logs, p1_acc, p2_acc, club_acc, finished, date, p1_score, p2_score) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                        [player1_id, player2_id, venue_id, best_of, log, 'false', 'false', 'false', 'false', '2016-11-26 17:20:51', 0, 0])
+            for row in con.execute('SELECT id FROM matches WHERE player1=? AND player2=? AND club=? AND finished="false"', [player1_id, player2_id, venue_id]):
+                match_id = row[0]
+            session['match_id'] = match_id
+            flash('A new match created.')
+            return redirect(url_for('show_scoreboard'))
+    flash('Match loaded.')
     session['match_id'] = match_id
     return redirect(url_for('show_scoreboard'))
 
