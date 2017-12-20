@@ -79,7 +79,8 @@ def show_scoreboard():
     scoring = Scoring(con, username, user_id=user_id, match_id=match_id)
     player1, player2, info = scoring.scoreboard_info
     username = session['username'] if 'username' in session else None
-    return render_template('scoreboard.html', username=username, player1=player1, player2=player2, info=info)
+    return render_template('scoreboard.html', username=username,
+                           player1=player1, player2=player2, info=info)
 
 
 @app.route('/login', methods=['POST'])
@@ -216,7 +217,8 @@ def form_scoreboard():
                 con.execute('UPDATE matches '
                             'SET finished=?, p1_score=?, p2_score=? '
                             'WHERE id=?',
-                            ['true', 1, 2, session['match_id']])
+                            ['true', request.form['player1_final_score'],
+                             request.form['player2_final_score'], session['match_id']])
             del session['match_id']
     return redirect(url_for('show_create_match'))
 

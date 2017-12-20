@@ -7,6 +7,9 @@ class Scoring(object):
         self.username = username
         self.match_id = match_id
         self.user_id = user_id
+        self.info = {}
+        self.player1 = {}
+        self.player2 = {}
 
 
     @property
@@ -103,39 +106,99 @@ class Scoring(object):
 
     @property
     def scoreboard_info(self):
-        player1, player2, info = {}, {}, {}
+        club_id = self.con.execute('SELECT club '
+                                   'FROM matches '
+                                   'WHERE id=?',
+                                   [self.match_id]).fetchone()[0]
+        self.info['club'] = self.con.execute('SELECT clubname '
+                                             'FROM clubs '
+                                             'WHERE id=?',
+                                             [club_id]).fetchone()[0]
+        player1_id = self.con.execute('SELECT player1 '
+                                      'FROM matches '
+                                      'WHERE id=?',
+                                      [self.match_id]).fetchone()[0]
+        self.player1['name'] = self.con.execute('SELECT username '
+                                                'FROM users '
+                                                'WHERE id=?',
+                                                [player1_id]).fetchone()[0]
+        player2_id = self.con.execute('SELECT player2 '
+                                      'FROM matches '
+                                      'WHERE id=?',
+                                      [self.match_id]).fetchone()[0]
+        self.player2['name'] = self.con.execute('SELECT username '
+                                                'FROM users '
+                                                'WHERE id=?',
+                                                [player2_id]).fetchone()[0]
+        self.info['best_of'] = int(self.con.execute('SELECT bestof '
+                                                    'FROM matches '
+                                                    'WHERE id=?',
+                                                    [self.match_id]).fetchone()[0])
         # TODO change state into enums?
-        STATES = ['normal', 'paused', 'just_begun', 'just_won', 'finished']
-        info['state'] = 'paused'
-        info['break'] = 11
-        info['shot_time'] = 28
-        info['frame_time'] = 577
-        info['best_of'] = 7
-        info['club'] = 'Frame'
-        info['player1_at_table'] = True
-
-        player1['name'] = 'Danio'
-        player1['points'] = 53
-        player1['frames'] = 2
-
-        player2['name'] = 'Drugi koles'
-        player2['points'] = 24
-        player2['frames'] = 4
+        # STATES = ['normal', 'paused', 'just_begun', 'just_won', 'finished']
 
         for time, command in self._match_logs:
-            info['state'] = 'normal'
             print(time, command)
-            if command == 'pause':
-                info['state'] = 'paused'
+            if command == 'begin':
+                self.info['active_player']= 'player1'
+                self.info['state'] = 'just_begun'
+                self.info['break'] = 0
+                self.info['shot_time'] = 0
+                self.info['frame_time'] = 0
+                self.player1['points'] = 0
+                self.player1['frames'] = 0
+                self.player2['points'] = 0
+                self.player2['frames'] = 0
+            elif command == 'start':
+                self.info['state'] = 'normal'
+            elif command == 'pause':
+                self.info['state'] = 'paused'
+            elif command == 'resume':
+                self.info['state'] = 'normal'
+            elif command == 'change':
+                self._change_active_player()
             elif command == 'begin':
-                info['state'] = 'just_begun'
-            elif command == 'win':
-                info['state'] = 'just_won'
+                self.info['state'] = 'just_begun'
+            elif command in ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7']:
+                self._add_points_to_active_player(int(command[-1]))
             elif command in ['foul4', 'foul5', 'foul6', 'foul7']:
-                info['state'] = 'missable'
-            elif False:
-                info['state'] = 'finished'
+                self._change_active_player()
+                self._add_points_to_active_player(int(command[-1]))
+                self.info['state'] = 'missable'
+            elif command == 'win':
+                self.player1['points'] = 0
+                self.player2['points'] = 0
+                self._add_frame_to_active_player()
+                self._select_active_player()
+                self.info['state'] = 'just_won'
+                if self.player1['frames'] + self.player2['frames'] == self.info['best_of']:
+                    self.info['state'] = 'finished'
+        return self.player1, self.player2, self.info
 
 
+    def _change_active_player(self):
+        if self.info['active_player'] == 'player1':
+            self.info['active_player'] = 'player2'
+        else:
+            self.info['active_player'] = 'player1'
 
-        return player1, player2, info
+
+    def _add_points_to_active_player(self, amount):
+        if self.info['active_player'] == 'player1':
+            self.player1['points'] += amount
+        else:
+            self.player2['points'] += amount
+
+
+    def _add_frame_to_active_player(self):
+        if self.info['active_player'] == 'player1':
+            self.player1['frames'] += 1
+        else:
+            self.player2['frames'] += 1
+
+
+    def _select_active_player(self):
+        if (self.player1['frames'] + self.player2['frames']) % 2 == 0:
+            self.info['active_player'] = 'player1'
+        else:
+            self.info['active_player'] = 'player2'

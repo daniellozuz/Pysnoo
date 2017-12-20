@@ -4,7 +4,7 @@
 	<div id="wyswietlacz">
 		Venue:<br/> {{ info['club'] }}
 		<div id="topka">
-			{% if info['player1_at_table'] %} <div id="gracz1_active"> {% else %} <div id="gracz1"> {% endif %}
+			{% if info['active_player'] == 'player1' %} <div id="gracz1_active"> {% else %} <div id="gracz1"> {% endif %}
 				{{ player1['name'] }}
 				<br/> {{ player1['points'] }}
 				<br/> {{ player1['frames'] }}
@@ -17,7 +17,7 @@
 					{% if info['state'] == 'paused' %} <br/>Match paused {% else %} Shot time: {{ info['shot_time'] }} <br/> Frame time: {{ info['frame_time'] }} {% endif %}
 				</div>
 			</div>
-			{% if not info['player1_at_table'] %} <div id="gracz2_active"> {% else %} <div id="gracz2"> {% endif %}
+			{% if info['active_player'] == 'player2' %} <div id="gracz2_active"> {% else %} <div id="gracz2"> {% endif %}
 				{{ player2['name'] }}
 				<br/> {{ player2['points'] }}
 				<br/> {{ player2['frames'] }}
@@ -56,8 +56,8 @@
 		{% elif info['state'] == 'finished' %}
 			<form method="post" action="http://localhost:5000/scoreboard"><input type="submit" value="Back" name="back" id="back"></form>
 			<form method="post" action="http://localhost:5000/scoreboard">
-				<input type="hidden" name="player1_final_score" value="{{ 14 }}"></input>
-				<input type="hidden" name="player2_final_score" value="{{ 13 }}"></input>
+				<input type="hidden" name="player1_final_score" value="{{ player1['frames'] }}"></input>
+				<input type="hidden" name="player2_final_score" value="{{ player2['frames'] }}"></input>
 				<input type="submit" value="Finish" name="finish" id="finish">
 			</form>
 		{% elif true %}
