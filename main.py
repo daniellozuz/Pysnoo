@@ -9,9 +9,9 @@ app.secret_key = 'dupa' # XXX What is it for and how does it work?
 con = sqlite3.connect('snooker.db', check_same_thread=False)
 
 
+################################################# XXX PAGES XXX ####################################
 @app.route('/index.html')
 def show_index():
-    del session['match_id']
     username = session['username'] if 'username' in session else None
     return render_template('index.html', username=username)
 
@@ -112,6 +112,7 @@ def show_scoreboard():
     return render_template('scoreboard.html', username=username, match_info=match_info)
 
 
+################################################# XXX FORMS XXX ####################################
 @app.route('/login', methods=['POST'])
 def log_in():
     # XXX Validate form.
@@ -193,13 +194,35 @@ def create_match():
     return redirect(url_for('show_scoreboard'))
 
 
+@app.route('/scoreboard', methods=['POST'])
+def scoreboard():
+    # Do things in current match (Add log or change match flags eg. acceptance)
+    match_id = session['match_id']
+    print('Match ID:', match_id)
+    button = list(request.form.keys())[0]
+    if button == 'GoToMatch_Back':
+        del session['match_id']
+        return redirect(url_for('show_create_match'))
+    time = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    new_log = 'Log: ' + time + ' : ' + button
+    for row in con.execute('SELECT logs FROM matches WHERE id=?', [match_id]):
+        prev_logs = row[0]
+    with con:
+        con.execute('UPDATE matches SET logs=? WHERE id=?', [prev_logs + new_log, match_id])
+    print('Previous logs:', prev_logs)
+    print('Adding:', new_log)
+    print(button)
+    return redirect(url_for('show_scoreboard'))
+
+
+################################################# XXX HELPERS XXX ##################################
 def parse_logs(logs):
     logs = logs.split('Log: ')[1:]
     print('Match logs before parsing at parse_logs:', logs)
     match_logs = []
     for log in logs:
-        datetime, command = log.split(' : ')
-        match_logs.append((datetime, command))
+        time, command = log.split(' : ')
+        match_logs.append((time, command))
     print('Match logs at parse_logs:', match_logs)
     return match_logs
 
@@ -207,22 +230,22 @@ def parse_logs(logs):
 def get_scoring(match_logs, first_player):
     # XXX Heavily bugged. 1. Initial player not known.
     print('Match logs at get_scoring:', match_logs)
-    for datetime, command in match_logs:
+    for time, command in match_logs:
         if command == 'begin':
-            scoring = {'time': [datetime], 'you': [0], 'opponent': [0]}
+            scoring = {'time': [time], 'you': [0], 'opponent': [0]}
             if first_player == 'you':
                 at_table = 'you'
                 sitting = 'opponent'
         elif command == 'start':
-            scoring['time'].append(datetime)
+            scoring['time'].append(time)
             scoring[at_table].append(0)
             scoring[sitting].append(0)
         elif command in ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7']:
-            scoring['time'].append(datetime)
+            scoring['time'].append(time)
             scoring[at_table].append(scoring[at_table][-1] + int(command[-1]))
             scoring[sitting].append(scoring[sitting][-1])
         elif command == 'change':
-            scoring['time'].append(datetime)
+            scoring['time'].append(time)
             scoring[at_table].append(scoring[at_table][-1])
             scoring[sitting].append(scoring[sitting][-1])
             if at_table == 'you':
@@ -232,15 +255,16 @@ def get_scoring(match_logs, first_player):
                 at_table = 'you'
                 sitting = 'opponent'
         elif command == 'win':
-            scoring['time'].append(datetime)
+            scoring['time'].append(time)
             scoring[at_table].append(scoring[at_table][-1])
             scoring[sitting].append(scoring[sitting][-1])
         elif command in ['foul4', 'foul5', 'foul6', 'foul7']:
-            scoring['time'].append(datetime)
+            scoring['time'].append(time)
             scoring[at_table].append(scoring[at_table][-1])
             scoring[sitting].append(scoring[sitting][-1] + int(command[-1]))
         print('At table:', scoring[at_table][-1], 'Sitting:', scoring[sitting][-1])
     return scoring
 
 
-app.run(debug=True)
+if __name__ == '__main__':
+    app.run(debug=True)

@@ -27,36 +27,38 @@
 	</div>
 	<div id="buttonsy">
 		{% if true %}
-			<form method="post" action="submit_scoreboard.php"><input type="submit" value="Pause" name="pause" id="pause"></form>
-			<form method="post" action="submit_scoreboard.php"><input type="submit" value="Change" name="change" id="change"></form>
-			<form method="post" action="submit_scoreboard.php"><input type="submit" value="P1" name="p1" id="p1"></form>
-			<form method="post" action="submit_scoreboard.php"><input type="submit" value="P2" name="p2" id="p2"></form>
-			<form method="post" action="submit_scoreboard.php"><input type="submit" value="P3" name="p3" id="p3"></form>
-			<form method="post" action="submit_scoreboard.php"><input type="submit" value="P4" name="p4" id="p4"></form>
-			<form method="post" action="submit_scoreboard.php"><input type="submit" value="P5" name="p5" id="p5"></form>
-			<form method="post" action="submit_scoreboard.php"><input type="submit" value="P6" name="p6" id="p6"></form>
-			<form method="post" action="submit_scoreboard.php"><input type="submit" value="P7" name="p7" id="p7"></form>
-			<form method="post" action="submit_scoreboard.php"><input type="submit" value="Foul4" name="foul4" id="foul4"></form>
-			<form method="post" action="submit_scoreboard.php"><input type="submit" value="Foul5" name="foul5" id="foul5"></form>
-			<form method="post" action="submit_scoreboard.php"><input type="submit" value="Foul6" name="foul6" id="foul6"></form>
-			<form method="post" action="submit_scoreboard.php"><input type="submit" value="Foul7" name="foul7" id="foul7"></form>
-			{% if true %} <form method="post" action="submit_scoreboard.php"><input type="submit" value="Miss" name="miss" id="miss"></form> {% endif %}
-			<form method="post" action="submit_scoreboard.php"><input type="submit" value="Win" name="win" id="win"></form>
-			<form method="post" action="submit_scoreboard.php"><input type="submit" value="Back" name="back" id="back"></form>
+			<form method="post" action="http://localhost:5000/scoreboard"><input type="submit" value="Pause" name="pause" id="pause"></form>
+			<form method="post" action="http://localhost:5000/scoreboard"><input type="submit" value="Change" name="change" id="change"></form>
+			<form method="post" action="http://localhost:5000/scoreboard"><input type="submit" value="P1" name="p1" id="p1"></form>
+			<form method="post" action="http://localhost:5000/scoreboard"><input type="submit" value="P2" name="p2" id="p2"></form>
+			<form method="post" action="http://localhost:5000/scoreboard"><input type="submit" value="P3" name="p3" id="p3"></form>
+			<form method="post" action="http://localhost:5000/scoreboard"><input type="submit" value="P4" name="p4" id="p4"></form>
+			<form method="post" action="http://localhost:5000/scoreboard"><input type="submit" value="P5" name="p5" id="p5"></form>
+			<form method="post" action="http://localhost:5000/scoreboard"><input type="submit" value="P6" name="p6" id="p6"></form>
+			<form method="post" action="http://localhost:5000/scoreboard"><input type="submit" value="P7" name="p7" id="p7"></form>
+			<form method="post" action="http://localhost:5000/scoreboard"><input type="submit" value="Foul4" name="foul4" id="foul4"></form>
+			<form method="post" action="http://localhost:5000/scoreboard"><input type="submit" value="Foul5" name="foul5" id="foul5"></form>
+			<form method="post" action="http://localhost:5000/scoreboard"><input type="submit" value="Foul6" name="foul6" id="foul6"></form>
+			<form method="post" action="http://localhost:5000/scoreboard"><input type="submit" value="Foul7" name="foul7" id="foul7"></form>
+			{% if true %}
+				<form method="post" action="http://localhost:5000/scoreboard"><input type="submit" value="Miss" name="miss" id="miss"></form>
+			{% endif %}
+			<form method="post" action="http://localhost:5000/scoreboard"><input type="submit" value="Win" name="win" id="win"></form>
+			<form method="post" action="http://localhost:5000/scoreboard"><input type="submit" value="Back" name="back" id="back"></form>
 		{% else %}
 			{% if true %}
-			<form method="post" action="submit_scoreboard.php"><input type="submit" value="Start" name="start" id="start"></form>
+				<form method="post" action="http://localhost:5000/scoreboard"><input type="submit" value="Start" name="start" id="start"></form>
 			{% endif %}
 			{% if false %}
-			<form method="post" action="submit_scoreboard.php"><input type="submit" value="Resume" name="resume" id="resume"></form>
-			<form method="post" action="submit_scoreboard.php"><input type="submit" value="Back" name="back" id="back"></form>
+				<form method="post" action="http://localhost:5000/scoreboard"><input type="submit" value="Resume" name="resume" id="resume"></form>
+				<form method="post" action="http://localhost:5000/scoreboard"><input type="submit" value="Back" name="back" id="back"></form>
 			{% endif %}
 			{% if false %}
-			<form method="post" action="submit_scoreboard.php"><input type="submit" value="Start" name="start" id="start"></form>
-			<form method="post" action="submit_scoreboard.php"><input type="submit" value="Back" name="back" id="back"></form>
+				<form method="post" action="http://localhost:5000/scoreboard"><input type="submit" value="Start" name="start" id="start"></form>
+				<form method="post" action="http://localhost:5000/scoreboard"><input type="submit" value="Back" name="back" id="back"></form>
 			{% endif %}
 		{% endif %}
-		<form method="post" action="submit_goback.php">
+		<form method="post" action="http://localhost:5000/scoreboard">
 			<input type="submit" value="GoToMatch_Back" name="GoToMatch_Back" id="GoToMatch_Back">
 		</form>
 	</div>
