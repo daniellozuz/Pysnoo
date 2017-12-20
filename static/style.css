@@ -185,7 +185,7 @@ a {
 	height: 100px;
 }
 
-#start, #pause, #change, #p1, #p2, #p3, #p4, #p5, #p6, #p7, #foul4, #foul5, #foul6, #foul7, #miss, #win, #back, #resume, #GoToMatch_Back {
+#start, #pause, #change, #p1, #p2, #p3, #p4, #p5, #p6, #p7, #foul4, #foul5, #foul6, #foul7, #miss, #win, #back, #resume, #finish, #GoToMatch_Back {
 	background-color: #202020;
 	border: none;
 	float: left;

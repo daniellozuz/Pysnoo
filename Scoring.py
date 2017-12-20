@@ -127,8 +127,14 @@ class Scoring(object):
             print(time, command)
             if command == 'pause':
                 info['state'] = 'paused'
-            if command == 'begin':
+            elif command == 'begin':
                 info['state'] = 'just_begun'
+            elif command == 'win':
+                info['state'] = 'just_won'
+            elif command in ['foul4', 'foul5', 'foul6', 'foul7']:
+                info['state'] = 'missable'
+            elif True:
+                info['state'] = 'finished'
 
 
 

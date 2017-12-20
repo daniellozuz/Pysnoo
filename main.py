@@ -194,6 +194,9 @@ def form_scoreboard():
                         'SET logs=? '
                         'WHERE id=?',
                         [previous_logs.rpartition('Log: ')[0], session['match_id']])
+    elif button == 'finish':
+        # TODO Implement match ending
+        pass
     else:
         time = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
         new_log = 'Log: ' + time + ' : ' + button
