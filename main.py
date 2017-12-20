@@ -141,7 +141,8 @@ def register():
     reg_username = reg_name + ' ' + reg_surname
     try:
         with con:
-            con.execute('INSERT INTO users(username, password, date_of_birth) VALUES (?, ?, ?)',
+            con.execute('INSERT INTO users(username, password, date_of_birth) '
+                        'VALUES (?, ?, ?)',
                         [reg_username, reg_password, reg_dob])
     except sqlite3.IntegrityError:
         flash('Such user already exists.')
@@ -153,50 +154,64 @@ def register():
 @app.route('/create_match', methods=['POST'])
 def create_match():
     username = session['username'] if 'username' in session else None
-    player1_name = username if username else request.form['player1']
-    player2_name = request.form['player2']
-    venue_name = request.form['venue']
+    player1, player2, club = {}, {}, {}
+    player1['name'] = username if username else request.form['player1']
+    player2['name'] = request.form['player2']
+    club['name'] = request.form['venue']
     try:
         best_of = int(request.form['bestof'])
     except ValueError:
         flash('Incorrect best of.')
         return redirect(url_for('show_index'))
     try:
-        for row in con.execute('SELECT id FROM users WHERE username=?', [player1_name]):
-            player1_id = row[0]
-        print(player1_id)
-        for row in con.execute('SELECT id FROM users WHERE username=?', [player2_name]):
-            player2_id = row[0]
-        print(player2_id)
-        for row in con.execute('SELECT id FROM clubs WHERE clubname=?', [venue_name]):
-            venue_id = row[0]
-        print(venue_id)
-    except UnboundLocalError:
+        player1['id'] = con.execute('SELECT id '
+                                    'FROM users '
+                                    'WHERE username=?',
+                                    [player1['name']]).fetchone()[0]
+        player2['id'] = con.execute('SELECT id '
+                                    'FROM users '
+                                    'WHERE username=?',
+                                    [player2['name']]).fetchone()[0]
+        club['id'] = con.execute('SELECT id '
+                                 'FROM clubs '
+                                 'WHERE clubname=?',
+                                 [club['name']]).fetchone()[0]
+    except TypeError:
         flash('Sorry, the players or club you selected do not exist.')
         return redirect(url_for('show_index'))
     try:
-        for row in con.execute('SELECT id FROM matches WHERE player1=? AND player2=? AND club=? AND finished="false"', [player1_id, player2_id, venue_id]):
-            match_id = row[0]
-        print(match_id)
-    except UnboundLocalError:
+        session['match_id'] = con.execute('SELECT id '
+                                          'FROM matches '
+                                          'WHERE player1=? '
+                                          'AND player2=? '
+                                          'AND club=? '
+                                          'AND finished="false"',
+                                          [player1['id'], player2['id'], club['id']]).fetchone()[0]
+        flash('Match loaded.')
+    except TypeError:
         with con:
             time = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-            log = 'Log: ' + time + ' : begin'
-            con.execute('INSERT INTO matches(player1, player2, club, bestof, logs, p1_acc, p2_acc, club_acc, finished, date, p1_score, p2_score) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                        [player1_id, player2_id, venue_id, best_of, log, 'false', 'false', 'false', 'false', time, 0, 0])
-            for row in con.execute('SELECT id FROM matches WHERE player1=? AND player2=? AND club=? AND finished="false"', [player1_id, player2_id, venue_id]):
-                match_id = row[0]
-            session['match_id'] = match_id
+            initial_log = 'Log: ' + time + ' : begin'
+            con.execute('INSERT INTO matches(player1, player2, club, bestof, logs, p1_acc, p2_acc, '
+                        'club_acc, finished, date, p1_score, p2_score) '
+                        'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                        [player1['id'], player2['id'], club['id'], best_of, initial_log,
+                         'false', 'false', 'false', 'false', time, 0, 0])
+            session['match_id'] = con.execute('SELECT id '
+                                              'FROM matches '
+                                              'WHERE player1=? '
+                                              'AND player2=? '
+                                              'AND club=? '
+                                              'AND finished="false"',
+                                              [player1['id'], player2['id'],
+                                               club['id']]).fetchone()[0]
             flash('A new match created.')
-            return redirect(url_for('show_scoreboard'))
-    flash('Match loaded.')
-    session['match_id'] = match_id
     return redirect(url_for('show_scoreboard'))
 
 
 @app.route('/scoreboard', methods=['POST'])
 def scoreboard():
-    # Do things in current match (Add log or change match flags eg. acceptance)
+    # TODO Not finished (change match status when it is over.)
     match_id = session['match_id']
     print('Match ID:', match_id)
     button = list(request.form.keys())[0]
