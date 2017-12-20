@@ -6,13 +6,11 @@ class Scoring(object):
         self.con = con
         self.username = username
         self.match_id = match_id
-        self.match_logs = None
         self.user_id = user_id
-        if match_id:
-            self.match_logs = self._get_match_logs()
 
 
-    def _get_match_logs(self):
+    @property
+    def _match_logs(self):
         '''Retrurns a list of logs in form: [(time1, command1), (time2, command2), ...].'''
         match_logs = self.con.execute('SELECT logs '
                                       'FROM matches '
@@ -106,8 +104,9 @@ class Scoring(object):
     @property
     def scoreboard_info(self):
         player1, player2, info = {}, {}, {}
-
-        info['paused'] = False
+        # TODO change state into enums?
+        STATES = ['normal', 'paused', 'just_begun', 'just_won', 'finished']
+        info['state'] = 'paused'
         info['break'] = 11
         info['shot_time'] = 28
         info['frame_time'] = 577
@@ -123,12 +122,14 @@ class Scoring(object):
         player2['points'] = 24
         player2['frames'] = 4
 
+        for time, command in self._match_logs:
+            info['state'] = 'normal'
+            print(time, command)
+            if command == 'pause':
+                info['state'] = 'paused'
+            if command == 'begin':
+                info['state'] = 'just_begun'
+
+
+
         return player1, player2, info
-
-
-if __name__ == '__main__':
-    import sqlite3
-    con = sqlite3.connect('snooker.db', check_same_thread=False)
-    scoring = Scoring(con, 'Daniel Zuziak', user_id=1, match_id=40)
-    print(scoring.match_logs)
-    print(scoring.generic_stats)

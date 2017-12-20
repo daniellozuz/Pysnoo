@@ -14,7 +14,7 @@
 					{% if info['break'] != 0 %} Break<br/> {{ info['break'] }} {% endif %}
 				</div>
 				<div id="tajmer">
-					{% if info['paused'] %} <br/>Match paused {% else %} Shot time: {{ info['shot_time'] }} <br/> Frame time: {{ info['frame_time'] }} {% endif %}
+					{% if info['state'] == 'paused' %} <br/>Match paused {% else %} Shot time: {{ info['shot_time'] }} <br/> Frame time: {{ info['frame_time'] }} {% endif %}
 				</div>
 			</div>
 			{% if not info['player1_at_table'] %} <div id="gracz2_active"> {% else %} <div id="gracz2"> {% endif %}
@@ -28,7 +28,12 @@
 		</div>
 	</div>
 	<div id="buttonsy">
-		{% if true %}
+		{% if info['state'] == 'paused' %}
+			<form method="post" action="http://localhost:5000/scoreboard"><input type="submit" value="Resume" name="resume" id="resume"></form>
+			<form method="post" action="http://localhost:5000/scoreboard"><input type="submit" value="Back" name="back" id="back"></form>
+		{% elif info['state'] == 'just_begun' %}
+			<form method="post" action="http://localhost:5000/scoreboard"><input type="submit" value="Start" name="start" id="start"></form>
+		{% elif true %}
 			<form method="post" action="http://localhost:5000/scoreboard"><input type="submit" value="Pause" name="pause" id="pause"></form>
 			<form method="post" action="http://localhost:5000/scoreboard"><input type="submit" value="Change" name="change" id="change"></form>
 			<form method="post" action="http://localhost:5000/scoreboard"><input type="submit" value="P1" name="p1" id="p1"></form>

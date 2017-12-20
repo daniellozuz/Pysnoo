@@ -184,19 +184,29 @@ def form_scoreboard():
     button = list(request.form.keys())[0]
     if button == 'GoToMatch_Back':
         del session['match_id']
-        return redirect(url_for('show_create_match'))
-    time = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-    new_log = 'Log: ' + time + ' : ' + button
-    previous_logs = con.execute('SELECT logs '
-                                'FROM matches '
-                                'WHERE id=?',
-                                [session['match_id']]).fetchone()[0]
-    with con:
-        con.execute('UPDATE matches '
-                    'SET logs=? '
-                    'WHERE id=?',
-                    [previous_logs + new_log, session['match_id']])
-    return redirect(url_for('show_scoreboard'))
+    elif button == 'back':
+        previous_logs = con.execute('SELECT logs '
+                                    'FROM matches '
+                                    'WHERE id=?',
+                                    [session['match_id']]).fetchone()[0]
+        with con:
+            con.execute('UPDATE matches '
+                        'SET logs=? '
+                        'WHERE id=?',
+                        [previous_logs.rpartition('Log: ')[0], session['match_id']])
+    else:
+        time = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+        new_log = 'Log: ' + time + ' : ' + button
+        previous_logs = con.execute('SELECT logs '
+                                    'FROM matches '
+                                    'WHERE id=?',
+                                    [session['match_id']]).fetchone()[0]
+        with con:
+            con.execute('UPDATE matches '
+                        'SET logs=? '
+                        'WHERE id=?',
+                        [previous_logs + new_log, session['match_id']])
+    return redirect(url_for('show_create_match'))
 
 
 if __name__ == '__main__':
