@@ -229,12 +229,15 @@ def parse_logs(logs):
 
 def get_scoring(match_logs, first_player):
     # XXX Possibly bugged: Which player after win?
+    if first_player == 'you':
+        at_table = 'you'
+        sitting = 'opponent'
+    scoring = {'time': [], 'you': [], 'opponent': []}
     for time, command in match_logs:
+        scoring['time'].append(time)
         if command == 'begin':
-            scoring = {'time': [], 'you': [0], 'opponent': [0]}
-            if first_player == 'you':
-                at_table = 'you'
-                sitting = 'opponent'
+            scoring[at_table].append(0)
+            scoring[sitting].append(0)
         elif command == 'start':
             scoring[at_table].append(0)
             scoring[sitting].append(0)
@@ -251,7 +254,6 @@ def get_scoring(match_logs, first_player):
         elif command in ['foul4', 'foul5', 'foul6', 'foul7']:
             scoring[at_table].append(scoring[at_table][-1])
             scoring[sitting].append(scoring[sitting][-1] + int(command[-1]))
-        scoring['time'].append(time)
     return scoring
 
 
