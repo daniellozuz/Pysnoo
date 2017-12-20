@@ -105,8 +105,25 @@ class Scoring(object):
 
     @property
     def scoreboard_info(self):
-        return 'Not', 'implemented', 'yet.'
+        player1, player2, info = {}, {}, {}
 
+        info['paused'] = False
+        info['break'] = 11
+        info['shot_time'] = 28
+        info['frame_time'] = 577
+        info['best_of'] = 7
+        info['club'] = 'Frame'
+        info['player1_at_table'] = True
+
+        player1['name'] = 'Danio'
+        player1['points'] = 53
+        player1['frames'] = 2
+
+        player2['name'] = 'Drugi koles'
+        player2['points'] = 24
+        player2['frames'] = 4
+
+        return player1, player2, info
 
 
 if __name__ == '__main__':

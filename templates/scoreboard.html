@@ -2,27 +2,29 @@
 {% block content %}
 
 	<div id="wyswietlacz">
-		Venue:<br/>CueBar
+		Venue:<br/> {{ info['club'] }}
 		<div id="topka">
-			{% if true %} <div id="gracz1_active"> {% else %} <div id="gracz1"> {% endif %}
-				<br/>52
-				<br/>1
+			{% if info['player1_at_table'] %} <div id="gracz1_active"> {% else %} <div id="gracz1"> {% endif %}
+				{{ player1['name'] }}
+				<br/> {{ player1['points'] }}
+				<br/> {{ player1['frames'] }}
 			</div>
 			<div id="srodek">
 				<div id="brejkus">
-					{% if true %} Break<br/>10 {% endif %}
+					{% if info['break'] != 0 %} Break<br/> {{ info['break'] }} {% endif %}
 				</div>
 				<div id="tajmer">
-					{% if true %} <br/>Match paused {% else %} Shot time: 23<br/>Frame time: 455 {% endif %}
+					{% if info['paused'] %} <br/>Match paused {% else %} Shot time: {{ info['shot_time'] }} <br/> Frame time: {{ info['frame_time'] }} {% endif %}
 				</div>
 			</div>
-			{% if true %} <div id="gracz2_active"> {% else %} <div id="gracz2"> {% endif %}
-				<br/>23
-				<br/>3
+			{% if not info['player1_at_table'] %} <div id="gracz2_active"> {% else %} <div id="gracz2"> {% endif %}
+				{{ player2['name'] }}
+				<br/> {{ player2['points'] }}
+				<br/> {{ player2['frames'] }}
 			</div>
 		</div>
 		<div id="bestof">
-			Bestof<br/>9
+			Bestof<br/> {{ info['best_of'] }}
 		</div>
 	</div>
 	<div id="buttonsy">
