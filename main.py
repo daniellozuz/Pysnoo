@@ -91,6 +91,25 @@ def show_detailed_stats():
     return render_template('detailed_stats.html', username=username, scoring=scoring)
 
 
+@app.route('/create_match.html')
+def show_create_match():
+    if 'match_id' in session:
+        return redirect(url_for('show_scoreboard'))
+    players = [row[1] for row in con.execute('SELECT * FROM users ORDER BY username ASC')]
+    clubs = [row[1] for row in con.execute('SELECT * FROM clubs ORDER BY clubname ASC')]
+    username = session['username'] if 'username' in session else None
+    return render_template('create_match.html', username=username, players=players, clubs=clubs)
+
+
+@app.route('/scoreboard.html')
+def show_scoreboard():
+    # Show match which id is in session['match_id]
+    match_id = session['match_id']
+    match_info = 'Nothing yet.'
+    username = session['username'] if 'username' in session else None
+    return render_template('scoreboard.html', username=username, match_info=match_info)
+
+
 @app.route('/login', methods=['POST'])
 def log_in():
     # XXX Validate form.
@@ -128,22 +147,52 @@ def register():
     return redirect(url_for('show_index'))
 
 
+@app.route('/create_match', methods=['POST'])
+def create_match():
+    username = session['username'] if 'username' in session else None
+    player1_name = username if username else request.form['player1']
+    player2_name = request.form['player2']
+    venue_name = request.form['venue']
+    best_of = request.form['bestof']
+    try:
+        for row in con.execute('SELECT id FROM users WHERE username=?', [player1_name]):
+            player1_id = row[0]
+        print(player1_id)
+        for row in con.execute('SELECT id FROM users WHERE username=?', [player2_name]):
+            player2_id = row[0]
+        print(player2_id)
+        for row in con.execute('SELECT id FROM clubs WHERE clubname=?', [venue_name]):
+            venue_id = row[0]
+        print(venue_id)
+    except UnboundLocalError:
+        flash('Sorry, the players or club you selected do not exist.')
+        return redirect(url_for('show_index'))
+    try:
+        for row in con.execute('SELECT id FROM matches WHERE player1=? AND player2=? AND club=? AND finished="false"', [player1_id, player2_id, venue_id]):
+            match_id = row[0]
+        print(match_id)
+    except UnboundLocalError:
+        flash('Match not found, implement its creation and return scoreboard with new match.')
+        return redirect(url_for('show_index'))
+    session['match_id'] = match_id
+    return redirect(url_for('show_scoreboard'))
+
+
 def parse_logs(logs):
     logs = logs.split('Log: ')[1:]
     print('Match logs before parsing at parse_logs:', logs)
-    match_logs = {}
+    match_logs = []
     for log in logs:
         datetime, command = log.split(' : ')
-        print(datetime, command)
-        match_logs[datetime] = command # XXX The same times are possible !!!! dict is no good!!! XXX
+        match_logs.append((datetime, command))
     print('Match logs at parse_logs:', match_logs)
     return match_logs
 
 
 def get_scoring(match_logs, first_player):
-    # XXX Heavily bugged. 1. Only one frame remembered. 2. Initial player not known.
+    # XXX Heavily bugged. 1. Initial player not known.
     print('Match logs at get_scoring:', match_logs)
-    for datetime, command in match_logs.items():
+    for datetime, command in match_logs:
         if command == 'begin':
             scoring = {'time': [datetime], 'you': [0], 'opponent': [0]}
             if first_player == 'you':
@@ -169,8 +218,8 @@ def get_scoring(match_logs, first_player):
                 sitting = 'opponent'
         elif command == 'win':
             scoring['time'].append(datetime)
-            scoring[at_table].append(0)
-            scoring[sitting].append(0)
+            scoring[at_table].append(scoring[at_table][-1])
+            scoring[sitting].append(scoring[sitting][-1])
         elif command in ['foul4', 'foul5', 'foul6', 'foul7']:
             scoring['time'].append(datetime)
             scoring[at_table].append(scoring[at_table][-1])
