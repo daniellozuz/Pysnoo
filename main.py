@@ -181,7 +181,11 @@ def form_create_match():
 @app.route('/scoreboard', methods=['POST'])
 def form_scoreboard():
     # TODO Not finished (change match status when it is over.)
-    button = list(request.form.keys())[0]
+    if len(list(request.form.keys())) == 1:
+        button = list(request.form.keys())[0]
+    else:
+        button = request.form['finish'].lower()
+    print('Button:', button)
     if button == 'GoToMatch_Back':
         del session['match_id']
     elif button == 'back':
@@ -194,9 +198,6 @@ def form_scoreboard():
                         'SET logs=? '
                         'WHERE id=?',
                         [previous_logs.rpartition('Log: ')[0], session['match_id']])
-    elif button == 'finish':
-        # TODO Implement match ending
-        pass
     else:
         time = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
         new_log = 'Log: ' + time + ' : ' + button
@@ -209,6 +210,14 @@ def form_scoreboard():
                         'SET logs=? '
                         'WHERE id=?',
                         [previous_logs + new_log, session['match_id']])
+        if button == 'finish':
+            # TODO Implement match ending
+            with con:
+                con.execute('UPDATE matches '
+                            'SET finished=?, p1_score=?, p2_score=? '
+                            'WHERE id=?',
+                            ['true', 1, 2, session['match_id']])
+            del session['match_id']
     return redirect(url_for('show_create_match'))
 
 

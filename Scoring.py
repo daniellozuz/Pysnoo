@@ -133,7 +133,7 @@ class Scoring(object):
                 info['state'] = 'just_won'
             elif command in ['foul4', 'foul5', 'foul6', 'foul7']:
                 info['state'] = 'missable'
-            elif True:
+            elif False:
                 info['state'] = 'finished'
 
 
