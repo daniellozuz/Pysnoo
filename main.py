@@ -1,5 +1,6 @@
 from flask import Flask, render_template, session, request, redirect, url_for, flash
 import sqlite3
+import datetime
 
 
 app = Flask(__name__)
@@ -10,6 +11,7 @@ con = sqlite3.connect('snooker.db', check_same_thread=False)
 
 @app.route('/index.html')
 def show_index():
+    del session['match_id']
     username = session['username'] if 'username' in session else None
     return render_template('index.html', username=username)
 
@@ -177,9 +179,10 @@ def create_match():
         print(match_id)
     except UnboundLocalError:
         with con:
-            log = 'Log: ' + '2016-11-26 17:20:51' + ' : begin'
+            time = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+            log = 'Log: ' + time + ' : begin'
             con.execute('INSERT INTO matches(player1, player2, club, bestof, logs, p1_acc, p2_acc, club_acc, finished, date, p1_score, p2_score) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                        [player1_id, player2_id, venue_id, best_of, log, 'false', 'false', 'false', 'false', '2016-11-26 17:20:51', 0, 0])
+                        [player1_id, player2_id, venue_id, best_of, log, 'false', 'false', 'false', 'false', time, 0, 0])
             for row in con.execute('SELECT id FROM matches WHERE player1=? AND player2=? AND club=? AND finished="false"', [player1_id, player2_id, venue_id]):
                 match_id = row[0]
             session['match_id'] = match_id
