@@ -1,6 +1,6 @@
+import datetime
 from flask import Flask, render_template, session, request, redirect, url_for, flash
 import sqlite3
-import datetime
 from Scoring import Scoring
 
 
@@ -181,12 +181,10 @@ def form_create_match():
 
 @app.route('/scoreboard', methods=['POST'])
 def form_scoreboard():
-    # TODO Not finished (change match status when it is over.)
     if len(list(request.form.keys())) == 1:
         button = list(request.form.keys())[0]
     else:
         button = request.form['finish'].lower()
-    print('Button:', button)
     if button == 'GoToMatch_Back':
         del session['match_id']
     elif button == 'back':
@@ -212,7 +210,6 @@ def form_scoreboard():
                         'WHERE id=?',
                         [previous_logs + new_log, session['match_id']])
         if button == 'finish':
-            # TODO Implement match ending
             with con:
                 con.execute('UPDATE matches '
                             'SET finished=?, p1_score=?, p2_score=? '

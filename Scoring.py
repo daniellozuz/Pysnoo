@@ -198,7 +198,5 @@ class Scoring(object):
 
 
     def _select_active_player(self):
-        if (self.player1['frames'] + self.player2['frames']) % 2 == 0:
-            self.info['active_player'] = 'player1'
-        else:
-            self.info['active_player'] = 'player2'
+        total_frames = self.player1['frames'] + self.player2['frames']
+        self.info['active_player'] = 'player1' if total_frames % 2 == 0 else 'player2'
