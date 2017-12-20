@@ -1,6 +1,7 @@
 from flask import Flask, render_template, session, request, redirect, url_for, flash
 import sqlite3
 import datetime
+from Scoring import Scoring
 
 
 app = Flask(__name__)
@@ -8,8 +9,6 @@ app.secret_key = 'dupa' # XXX What is it for and how does it work?
 
 con = sqlite3.connect('snooker.db', check_same_thread=False)
 
-
-################################################# XXX PAGES XXX ####################################
 
 @app.route('/index.html')
 def show_index():
@@ -37,44 +36,11 @@ def show_register():
 
 @app.route('/generic_stats.html')
 def show_generic_stats():
-    matches = []
-    for row in con.execute("SELECT IFNULL(B.username,'') player1,\
-                           IFNULL(C.username,'') player2,\
-                           IFNULL(D.clubname,'') clubname,\
-                           A.id, A.bestof, A.date, A.p1_score, A.p2_score FROM matches A\
-                           LEFT JOIN users B ON A.player1 = B.id\
-                           LEFT JOIN users C ON A.player2 = C.id\
-                           LEFT JOIN clubs D ON A.club = D.id\
-                           WHERE (player1=? OR player2=?) AND finished='true'",
-                           [session['id'], session['id']]):
-        match = {}
-        match['player1'] = row[0]
-        match['player2'] = row[1]
-        match['clubname'] = row[2]
-        match['id'] = row[3]
-        match['bestof'] = row[4]
-        match['date'] = row[5]
-        match['p1_score'] = row[6]
-        match['p2_score'] = row[7]
-        matches.append(match)
-    won = {'matches': 0, 'frames': 0}
-    lost = {'matches': 0, 'frames': 0}
-    for match in matches:
-        if session['username'] == match['player1']:
-            won['frames'] += int(match['p1_score'])
-            lost['frames'] += int(match['p2_score'])
-            if int(match['p1_score']) > int(match['p2_score']):
-                won['matches'] += 1
-            else:
-                lost['matches'] += 1
-        else:
-            won['frames'] += int(match['p2_score'])
-            lost['frames'] += int(match['p1_score'])
-            if int(match['p2_score']) > int(match['p1_score']):
-                won['matches'] += 1
-            else:
-                lost['matches'] += 1
+    # XXX What if not logged in?
     username = session['username'] if 'username' in session else None
+    user_id = session['id'] if 'id' in session else None
+    scoring = Scoring(con, username, user_id=user_id)
+    matches, won, lost = scoring.generic_stats
     return render_template('generic_stats.html', username=username,
                            matches=matches, won=won, lost=lost)
 
@@ -82,16 +48,11 @@ def show_generic_stats():
 @app.route('/detailed_stats.html', methods=['POST'])
 def show_detailed_stats():
     match_id = request.form['show_match']
-    player1_id, match_logs = con.execute('SELECT player1, logs '
-                                         'FROM matches '
-                                         'WHERE id=?',
-                                         [match_id]).fetchone()
-    player1 = 'you' if player1_id == session['id'] else 'opponent'
-    match_logs = parse_logs(match_logs)
-    # XXX Check which player are you.
-    scoring = get_scoring(match_logs, player1)
     username = session['username'] if 'username' in session else None
-    return render_template('detailed_stats.html', username=username, scoring=scoring)
+    scoring = Scoring(con, username, match_id=match_id)
+    scores = scoring.detailed_stats
+    username = session['username'] if 'username' in session else None
+    return render_template('detailed_stats.html', username=username, scores=scores)
 
 
 @app.route('/create_match.html')
@@ -110,17 +71,19 @@ def show_create_match():
 
 @app.route('/scoreboard.html')
 def show_scoreboard():
+    # XXX I do not have to be logged in in order to play matches.
     # Show match which id is in session['match_id]
     match_id = session['match_id']
-    match_info = 'Nothing yet.'
+    username = session['username']
+    user_id = session['id']
+    scoring = Scoring(con, username, user_id=user_id, match_id=match_id)
+    player1, player2, info = scoring.scoreboard_info
     username = session['username'] if 'username' in session else None
-    return render_template('scoreboard.html', username=username, match_info=match_info)
+    return render_template('scoreboard.html', username=username, player1=player1, player2=player2, info=info)
 
-
-################################################# XXX FORMS XXX ####################################
 
 @app.route('/login', methods=['POST'])
-def log_in():
+def form_log_in():
     # XXX Validate form.
     username = request.form['username']
     password = request.form['password']
@@ -132,13 +95,13 @@ def log_in():
 
 
 @app.route('/logout', methods=['POST'])
-def log_out():
+def form_log_out():
     del session['username']
     return redirect(url_for('show_index'))
 
 
 @app.route('/register', methods=['POST'])
-def register():
+def form_register():
     # XXX Validate form.
     reg_name = request.form['reg_name']
     reg_surname = request.form['reg_surname']
@@ -158,7 +121,7 @@ def register():
 
 
 @app.route('/create_match', methods=['POST'])
-def create_match():
+def form_create_match():
     username = session['username'] if 'username' in session else None
     player1, player2, club = {}, {}, {}
     player1['name'] = username if username else request.form['player1']
@@ -216,7 +179,7 @@ def create_match():
 
 
 @app.route('/scoreboard', methods=['POST'])
-def scoreboard():
+def form_scoreboard():
     # TODO Not finished (change match status when it is over.)
     button = list(request.form.keys())[0]
     if button == 'GoToMatch_Back':
@@ -234,42 +197,6 @@ def scoreboard():
                     'WHERE id=?',
                     [previous_logs + new_log, session['match_id']])
     return redirect(url_for('show_scoreboard'))
-
-
-################################################# XXX HELPERS XXX ##################################
-
-def parse_logs(logs):
-    return [log.split(' : ') for log in logs.split('Log: ')[1:]]
-
-
-def get_scoring(match_logs, first_player):
-    # XXX Possibly bugged and not finished: Which player after win?
-    if first_player == 'you':
-        at_table = 'you'
-        sitting = 'opponent'
-    scoring = {'time': [], 'you': [], 'opponent': []}
-    for time, command in match_logs:
-        scoring['time'].append(time)
-        if command == 'begin':
-            scoring[at_table].append(0)
-            scoring[sitting].append(0)
-        elif command == 'start':
-            scoring[at_table].append(0)
-            scoring[sitting].append(0)
-        elif command in ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7']:
-            scoring[at_table].append(scoring[at_table][-1] + int(command[-1]))
-            scoring[sitting].append(scoring[sitting][-1])
-        elif command == 'change':
-            scoring[at_table].append(scoring[at_table][-1])
-            scoring[sitting].append(scoring[sitting][-1])
-            at_table, sitting = sitting, at_table
-        elif command == 'win':
-            scoring[at_table].append(scoring[at_table][-1])
-            scoring[sitting].append(scoring[sitting][-1])
-        elif command in ['foul4', 'foul5', 'foul6', 'foul7']:
-            scoring[at_table].append(scoring[at_table][-1])
-            scoring[sitting].append(scoring[sitting][-1] + int(command[-1]))
-    return scoring
 
 
 if __name__ == '__main__':

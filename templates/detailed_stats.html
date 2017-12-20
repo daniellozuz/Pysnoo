@@ -7,8 +7,8 @@
 	</div>
 	<script>
 		var you = {
-			x: {{ scoring['time'] | safe }} ,
-			y: {{ scoring['you'] | safe }} ,
+			x: {{ scores['time'] | safe }} ,
+			y: {{ scores['you'] | safe }} ,
 			type: 'scatter',
 			name: 'You',
 			line: {
@@ -17,8 +17,8 @@
 			}
 		};
 		var opponent = {
-			x: {{ scoring['time'] | safe }} ,
-			y: {{ scoring['opponent'] | safe }} ,
+			x: {{ scores['time'] | safe }} ,
+			y: {{ scores['opponent'] | safe }} ,
 			type: 'scatter',
 			name: 'Opponent',
 			line: {
@@ -30,7 +30,7 @@
 		var options = {
 			paper_bgcolor: 'rgba(0, 0, 0, 0)',
 			plot_bgcolor: 'rgba(0, 0, 0, 0)',
-			title: 'Scoring',
+			title: 'Scores',
 			width: 1000,
 			xaxis: {
 				showgrid: false
