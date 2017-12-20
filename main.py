@@ -228,41 +228,30 @@ def parse_logs(logs):
 
 
 def get_scoring(match_logs, first_player):
-    # XXX Heavily bugged. 1. Initial player not known.
-    print('Match logs at get_scoring:', match_logs)
+    # XXX Possibly bugged: Which player after win?
     for time, command in match_logs:
         if command == 'begin':
-            scoring = {'time': [time], 'you': [0], 'opponent': [0]}
+            scoring = {'time': [], 'you': [0], 'opponent': [0]}
             if first_player == 'you':
                 at_table = 'you'
                 sitting = 'opponent'
         elif command == 'start':
-            scoring['time'].append(time)
             scoring[at_table].append(0)
             scoring[sitting].append(0)
         elif command in ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7']:
-            scoring['time'].append(time)
             scoring[at_table].append(scoring[at_table][-1] + int(command[-1]))
             scoring[sitting].append(scoring[sitting][-1])
         elif command == 'change':
-            scoring['time'].append(time)
             scoring[at_table].append(scoring[at_table][-1])
             scoring[sitting].append(scoring[sitting][-1])
-            if at_table == 'you':
-                at_table = 'opponent'
-                sitting = 'you'
-            else:
-                at_table = 'you'
-                sitting = 'opponent'
+            at_table, sitting = sitting, at_table
         elif command == 'win':
-            scoring['time'].append(time)
             scoring[at_table].append(scoring[at_table][-1])
             scoring[sitting].append(scoring[sitting][-1])
         elif command in ['foul4', 'foul5', 'foul6', 'foul7']:
-            scoring['time'].append(time)
             scoring[at_table].append(scoring[at_table][-1])
             scoring[sitting].append(scoring[sitting][-1] + int(command[-1]))
-        print('At table:', scoring[at_table][-1], 'Sitting:', scoring[sitting][-1])
+        scoring['time'].append(time)
     return scoring
 
 
