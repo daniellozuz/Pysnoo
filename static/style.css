@@ -76,6 +76,20 @@ a {
 #menu {
 	background-color: #303030;
 	padding: 10px;
+	text-align: center;
+}
+
+.menu_opt {
+	display: inline-block;
+	height: 25px;
+	font-size: 18px;
+	padding: 10px 20px 10px 20px;
+	border-right: 1px solid #404040;
+}
+
+.menu_opt:hover {
+	cursor: pointer;
+	background-color: #202020;
 }
 
 #content {
@@ -250,15 +264,18 @@ a {
 	height: 50px;
 }
 
-.menu_opt {
-	float: left;
-	height: 25px;
-	font-size: 18px;
-	padding: 10px 20px 10px 20px;
-	border-right: 1px solid #404040;
+#flash_error {
+	position: absolute;
+	top: 10px;
+	left: 30px;
+	color: rgba(175, 50, 50, 0.5);
+	z-index: 2;
 }
 
-.menu_opt:hover {
-	cursor: pointer;
-	background-color: #202020;
+#flash_success {
+	position: absolute;
+	top: 10px;
+	left: 30px;
+	color: rgba(50, 185, 50, 0.5);
+	z-index: 2;
 }

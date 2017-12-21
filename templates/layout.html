@@ -8,12 +8,30 @@
 	<meta http-equiv="X-UA_Compatible" content="IE=edge,chrome=1" />
 	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
 	<script type="text/javascript" src="{{ url_for('static', filename='Chart.js') }}"></script>
-	<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='plotly-latest.min.js') }}"></script>
 	<link href='https://fonts.googleapis.com/css?family=Lato:400,700&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
 </head>
 
 <body>
 	<div id="container">
+		<div id="flash_error">
+			{% with messages = get_flashed_messages(category_filter=["error"]) %}
+				{% if messages %}
+					{% for message in messages %}
+						{{ message }} <br/>
+					{% endfor %}
+				{% endif %}
+			 {% endwith %}
+		</div>
+		<div id="flash_success">
+				{% with messages = get_flashed_messages(category_filter=["success"]) %}
+					{% if messages %}
+						{% for message in messages %}
+							{{ message }} <br/>
+						{% endfor %}
+					{% endif %}
+				 {% endwith %}
+			</div>
 		<div id="login_bar">
 			<div id="photo">
 				{% if username %}
@@ -45,17 +63,6 @@
 		</div>
 		<div id="header">
 			Snoo
-		</div>
-		<div id="flashes">
-			{% with messages = get_flashed_messages() %}
-				{% if messages %}
-				   	<ul>
-					{% for message in messages %}
-					  	<li>{{ message }}</li>
-					{% endfor %}
-				   	</ul>
-				{% endif %}
-			 {% endwith %}
 		</div>
 		<div id="menu">
 			<a href="index.html"><div class="menu_opt">Main menu</div></a>

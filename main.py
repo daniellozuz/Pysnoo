@@ -97,7 +97,7 @@ def form_log_in():
 
 @app.route('/logout', methods=['POST'])
 def form_log_out():
-    del session['username']
+    session.pop('username', None)
     return redirect(url_for('show_index'))
 
 
@@ -115,9 +115,9 @@ def form_register():
                         'VALUES (?, ?, ?)',
                         [reg_username, reg_password, reg_dob])
     except sqlite3.IntegrityError:
-        flash('Such user already exists.')
+        flash('Such user already exists.', 'error')
     else:
-        flash('A new user successfully created.')
+        flash('A new user created successfully.', 'success')
     return redirect(url_for('show_index'))
 
 
@@ -131,7 +131,7 @@ def form_create_match():
     try:
         best_of = int(request.form['bestof'])
     except ValueError:
-        flash('Incorrect best of.')
+        flash('Incorrect best of value.', 'error')
         return redirect(url_for('show_index'))
     try:
         player1['id'] = con.execute('SELECT id '
@@ -147,7 +147,7 @@ def form_create_match():
                                  'WHERE clubname=?',
                                  [club['name']]).fetchone()[0]
     except TypeError:
-        flash('Sorry, the players or club you selected do not exist.')
+        flash('The players or club do not exist.', 'error')
         return redirect(url_for('show_index'))
     try:
         session['match_id'] = con.execute('SELECT id '
@@ -157,13 +157,13 @@ def form_create_match():
                                           'AND club=? '
                                           'AND finished="false"',
                                           [player1['id'], player2['id'], club['id']]).fetchone()[0]
-        flash('Match loaded.')
+        flash('Match loaded successfully.', 'success')
     except TypeError:
         with con:
             time = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
             initial_log = 'Log: ' + time + ' : begin'
-            con.execute('INSERT INTO matches(player1, player2, club, bestof, logs, p1_acc, p2_acc, '
-                        'club_acc, finished, date, p1_score, p2_score) '
+            con.execute('INSERT INTO matches(player1, player2, club, bestof, logs, '
+                        'p1_acc, p2_acc, club_acc, finished, date, p1_score, p2_score) '
                         'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
                         [player1['id'], player2['id'], club['id'], best_of, initial_log,
                          'false', 'false', 'false', 'false', time, 0, 0])
@@ -175,7 +175,7 @@ def form_create_match():
                                           'AND finished="false"',
                                           [player1['id'], player2['id'],
                                            club['id']]).fetchone()[0]
-        flash('A new match created.')
+        flash('A new match created successfully.', 'success')
     return redirect(url_for('show_scoreboard'))
 
 
@@ -186,7 +186,7 @@ def form_scoreboard():
     else:
         button = request.form['finish'].lower()
     if button == 'GoToMatch_Back':
-        del session['match_id']
+        session.pop('match_id', None)
     elif button == 'back':
         previous_logs = con.execute('SELECT logs '
                                     'FROM matches '
@@ -216,7 +216,7 @@ def form_scoreboard():
                             'WHERE id=?',
                             ['true', request.form['player1_final_score'],
                              request.form['player2_final_score'], session['match_id']])
-            del session['match_id']
+            session.pop('match_id', None)
     return redirect(url_for('show_create_match'))
 
 
