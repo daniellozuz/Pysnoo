@@ -1,29 +1,31 @@
 {% extends 'layout.html' %}
 {% block content %}
 
-	<form method="post" action="http://localhost:5000/create_match">
-		{% if not username %}
-			Pick players.
-			<input list="players" name="player1">
+	<div id="plots">
+		<form method="post" action="http://localhost:5000/create_match">
+			{% if not username %}
+				Pick players
+				<input list="players" name="player1">
+				<datalist id="players">
+					{% for player in players %} <option value="{{ player }}"> {% endfor %}
+				</datalist>
+			{% else %}
+				Pick your opponent
+			{% endif %}
+			<input list="players" name="player2">
 			<datalist id="players">
 				{% for player in players %} <option value="{{ player }}"> {% endfor %}
 			</datalist>
-		{% else %}
-			Pick your opponent.
-		{% endif %}
-		<input list="players" name="player2">
-		<datalist id="players">
-			{% for player in players %} <option value="{{ player }}"> {% endfor %}
-		</datalist>
-		<br/>Pick the venue
-		<input list="clubs" name="club">
-		<datalist id="clubs">
-			{% for club in clubs %} <option value="{{ club }}"> {% endfor %}
-		</datalist>
-		<br/>Player 1 opens.
-		<br/>Choose best of
-		<input type="number" name="bestof" id="bestof">
-		<br/><input type="submit" value="GoToMatch" name="GoToMatch" id="GoToMatch">
-	</form>
+			<br/>Pick the venue
+			<input list="clubs" name="club">
+			<datalist id="clubs">
+				{% for club in clubs %} <option value="{{ club }}"> {% endfor %}
+			</datalist>
+			<br/>Player 1 opens
+			<br/>Choose best of
+			<input type="number" name="bestof" id="bestof">
+			<br/><input type="submit" value="GoToMatch" name="GoToMatch" id="GoToMatch">
+		</form>
+	</div>
 
 {% endblock %}
