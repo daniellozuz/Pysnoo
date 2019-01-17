@@ -2,4 +2,4 @@
 
 ## Engineering thesis at Mechatronic Engineering AGH.
 
-The app written in PHP is going to be converted to Python (Flask).
+The app was initially written in PHP and was rewritten into Python (Flask). Please ignore PHP files, these are left in repo for the sake of ease in rewriting them.
